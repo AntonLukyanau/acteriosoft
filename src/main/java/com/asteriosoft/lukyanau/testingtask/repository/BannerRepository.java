@@ -15,7 +15,7 @@ public interface BannerRepository extends JpaRepository<Banner, Long> {
 
     Optional<Banner> findByName(String bannerName);
 
-    java.util.List<Banner> findByNameLikeIgnoreCase(String bannerName);
+    List<Banner> findByNameLikeIgnoreCase(String bannerName);
 
     @Query("select b from Banner b join b.categories c where c.id in :categoryIds")
     List<Banner> findAllByCategoryIds(@Param("categoryIds") List<Long> categoryIds);
