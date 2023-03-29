@@ -2,7 +2,7 @@ package com.asteriosoft.lukyanau.testingtask.service.crud;
 
 public interface EntityCRUDService<T> {
 
-    boolean create(T entity);
+    void create(T entity);
 
     T findById(Long id);
 

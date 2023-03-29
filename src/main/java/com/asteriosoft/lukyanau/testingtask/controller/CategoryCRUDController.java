@@ -3,8 +3,8 @@ package com.asteriosoft.lukyanau.testingtask.controller;
 import com.asteriosoft.lukyanau.testingtask.dto.CategoryDTO;
 import com.asteriosoft.lukyanau.testingtask.dto.converter.Converter;
 import com.asteriosoft.lukyanau.testingtask.entity.Category;
-import com.asteriosoft.lukyanau.testingtask.service.validation.DTOValidator;
 import com.asteriosoft.lukyanau.testingtask.service.crud.EntityCRUDService;
+import com.asteriosoft.lukyanau.testingtask.service.validation.DTOValidator;
 import com.asteriosoft.lukyanau.testingtask.service.validation.ValidationResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,6 +56,8 @@ public record CategoryCRUDController(
             Category category = categoryConverter.fromDTO(categoryDTO);
             if (categoryService.update(category)) {
                 return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+            } else {
+                return ResponseEntity.unprocessableEntity().body("Category was not saved in DB");
             }
         }
         return ResponseEntity.unprocessableEntity().body(validation.getMessage());
@@ -64,7 +66,7 @@ public record CategoryCRUDController(
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCategory(@PathVariable Long id) {
         if (categoryService.deleteById(id)) {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+            return ResponseEntity.accepted().build();
         }
         return ResponseEntity.status(HttpStatus.CONFLICT).body("No possibility to delete category which used in active links");
     }

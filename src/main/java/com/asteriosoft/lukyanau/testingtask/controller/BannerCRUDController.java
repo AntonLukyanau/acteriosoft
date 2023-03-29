@@ -3,8 +3,8 @@ package com.asteriosoft.lukyanau.testingtask.controller;
 import com.asteriosoft.lukyanau.testingtask.dto.BannerDTO;
 import com.asteriosoft.lukyanau.testingtask.dto.converter.Converter;
 import com.asteriosoft.lukyanau.testingtask.entity.Banner;
-import com.asteriosoft.lukyanau.testingtask.service.validation.DTOValidator;
 import com.asteriosoft.lukyanau.testingtask.service.crud.EntityCRUDService;
+import com.asteriosoft.lukyanau.testingtask.service.validation.DTOValidator;
 import com.asteriosoft.lukyanau.testingtask.service.validation.ValidationResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,8 +52,11 @@ public record BannerCRUDController(
             ValidationResult validation = bannerValidator.validate(bannerDTO);
             if (validation == ValidationResult.IS_VALID) {
                 Banner banner = bannerConverter.fromDTO(bannerDTO);
-                bannerService.update(banner);
-                return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+                if (bannerService.update(banner)) {
+                    return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+                } else {
+                    return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Banner was not saved in DB");
+                }
             }
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(validation.getMessage());
         }

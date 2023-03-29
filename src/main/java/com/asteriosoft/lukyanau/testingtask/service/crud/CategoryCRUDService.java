@@ -15,12 +15,10 @@ public class CategoryCRUDService implements EntityCRUDService<Category> {
     private final BannerRepository bannerRepository;
 
     @Override
-    public boolean create(Category category) {
+    public void create(Category category) {
         if (category != null) {
             categoryRepository.save(category);
-            return true;
         }
-        return false;
     }
 
     @Override

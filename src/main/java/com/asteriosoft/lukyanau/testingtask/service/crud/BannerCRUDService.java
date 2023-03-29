@@ -14,12 +14,10 @@ public class BannerCRUDService implements EntityCRUDService<Banner> {
     private final BannerRepository bannerRepository;
 
     @Override
-    public boolean create(Banner banner) {
+    public void create(Banner banner) {
         if (banner != null) {
             bannerRepository.save(banner);
-            return true;
         }
-        return false;
     }
 
     @Override
