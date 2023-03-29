@@ -71,5 +71,4 @@ public record CategoryCRUDController(
         return ResponseEntity.status(HttpStatus.CONFLICT).body("No possibility to delete category which used in active links");
     }
 
-
 }

@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,6 +20,7 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 @Setter
 @Getter
+@EqualsAndHashCode
 @SQLDelete(sql = "UPDATE category SET deleted = true WHERE id=?")
 @Where(clause = "deleted=false")
 public class Category {
@@ -35,6 +37,7 @@ public class Category {
     @Column(name = "request_param")
     private String request;
 
+    @EqualsAndHashCode.Exclude
     @Column(name = "deleted")
     private boolean deleted = Boolean.FALSE;
 
