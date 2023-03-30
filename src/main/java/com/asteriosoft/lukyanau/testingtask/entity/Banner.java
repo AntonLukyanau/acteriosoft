@@ -10,6 +10,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,7 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
+@Builder
 @EqualsAndHashCode
 @SQLDelete(sql = "UPDATE banner SET deleted = true WHERE id=?")
 @Where(clause = "deleted=false")
@@ -43,7 +46,7 @@ public class Banner {
     private String body;
 
     @Column(name = "price", nullable = false)
-    private Double price;
+    private BigDecimal price;
 
     @EqualsAndHashCode.Exclude
     @Column(name = "deleted")
@@ -56,7 +59,7 @@ public class Banner {
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<Category> categories;
 
-    private Banner(Long id, String name, String body, Double price, boolean deleted, List<Category> categories) {
+    private Banner(Long id, String name, String body, BigDecimal price, boolean deleted, List<Category> categories) {
         this.id = id;
         this.name = name;
         this.body = body;
@@ -65,54 +68,4 @@ public class Banner {
         this.categories = new ArrayList<>(categories);
     }
 
-    public static BannerBuilder builder() {
-        return new BannerBuilder();
-    }
-
-    public static class BannerBuilder {
-        private Long id;
-        private String name;
-        private String body;
-        private Double price;
-        private boolean deleted = Boolean.FALSE;
-        private List<Category> categories;
-
-        BannerBuilder() {
-        }
-
-        public BannerBuilder id(Long id) {
-            this.id = id;
-            return this;
-        }
-
-        public BannerBuilder name(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public BannerBuilder body(String body) {
-            this.body = body;
-            return this;
-        }
-
-        public BannerBuilder price(Double price) {
-            this.price = price;
-            return this;
-        }
-
-        public BannerBuilder deleted(boolean deleted) {
-            this.deleted = deleted;
-            return this;
-        }
-
-        public BannerBuilder categories(List<Category> categories) {
-            this.categories = categories;
-            return this;
-        }
-
-        public Banner build() {
-            return new Banner(id, name, body, price, deleted, categories);
-        }
-
-    }
 }

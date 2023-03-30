@@ -13,6 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,19 +46,19 @@ public class DatabaseBannerSearcherTest {
         Banner banner1 = bannerRepository.save(Banner.builder()
                 .name("Banner 1")
                 .body("body 1")
-                .price(100.0)
+                .price(BigDecimal.valueOf(100.0))
                 .categories(List.of(category1, category2))
                 .build());
         Banner banner2 = bannerRepository.save(Banner.builder()
                 .name("Banner 2")
                 .body("body 2")
-                .price(150.0)
+                .price(BigDecimal.valueOf(150.0))
                 .categories(List.of(category2, category3))
                 .build());
         Banner banner3 = bannerRepository.save(Banner.builder()
                 .name("Banner 3")
                 .body("body 3")
-                .price(155.0)
+                .price(BigDecimal.valueOf(155.0))
                 .categories(List.of(category4))
                 .build());
 

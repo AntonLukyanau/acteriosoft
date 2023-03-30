@@ -36,9 +36,9 @@ public record BannerCRUDController(
         return ResponseEntity.unprocessableEntity().body(validation.getMessage());
     }
 
-    @GetMapping("/{bid}")
-    public ResponseEntity<BannerDTO> retrieveBanner(@PathVariable Long bid) {
-        Banner banner = bannerService.findById(bid);
+    @GetMapping("/{id}")
+    public ResponseEntity<BannerDTO> retrieveBanner(@PathVariable Long id) {
+        Banner banner = bannerService.findById(id);
         if (banner == null) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
@@ -63,9 +63,9 @@ public record BannerCRUDController(
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Id must be non null");
     }
 
-    @DeleteMapping("/{bid}")
-    public ResponseEntity<?> deleteBanner(@PathVariable Long bid) {
-        bannerService.deleteById(bid);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteBanner(@PathVariable Long id) {
+        bannerService.deleteById(id);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 

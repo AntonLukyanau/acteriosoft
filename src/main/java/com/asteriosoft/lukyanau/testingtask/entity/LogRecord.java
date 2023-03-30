@@ -8,10 +8,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -19,6 +21,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 public class LogRecord {
 
@@ -44,71 +47,10 @@ public class LogRecord {
     private String selectedBannerCategoryIds;
 
     @Column(name = "selected_banner_price")
-    private Double selectedBannerPrice;
+    private BigDecimal selectedBannerPrice;
 
     @Column(name = "no_content_reason")
     private String noContentReason;
 
-    public static LogRecordBuilder builder() {
-        return new LogRecordBuilder();
-    }
-
-    public static class LogRecordBuilder {
-        private Long id;
-        private String requestIpAddress;
-        private String userAgent;
-        private LocalDateTime requestTime;
-        private Long selectedBannerId;
-        private String selectedBannerCategoryIds;
-        private Double selectedBannerPrice;
-        private String noContentReason;
-
-        LogRecordBuilder() {
-        }
-
-        public LogRecordBuilder id(Long id) {
-            this.id = id;
-            return this;
-        }
-
-        public LogRecordBuilder requestIpAddress(String requestIpAddress) {
-            this.requestIpAddress = requestIpAddress;
-            return this;
-        }
-
-        public LogRecordBuilder userAgent(String userAgent) {
-            this.userAgent = userAgent;
-            return this;
-        }
-
-        public LogRecordBuilder requestTime(LocalDateTime requestTime) {
-            this.requestTime = requestTime;
-            return this;
-        }
-
-        public LogRecordBuilder selectedBannerId(Long selectedBannerId) {
-            this.selectedBannerId = selectedBannerId;
-            return this;
-        }
-
-        public LogRecordBuilder selectedBannerCategoryIds(String selectedBannerCategoryIds) {
-            this.selectedBannerCategoryIds = selectedBannerCategoryIds;
-            return this;
-        }
-
-        public LogRecordBuilder selectedBannerPrice(Double selectedBannerPrice) {
-            this.selectedBannerPrice = selectedBannerPrice;
-            return this;
-        }
-
-        public LogRecordBuilder noContentReason(String noContentReason) {
-            this.noContentReason = noContentReason;
-            return this;
-        }
-
-        public LogRecord build() {
-            return new LogRecord(id, requestIpAddress, userAgent, requestTime, selectedBannerId, selectedBannerCategoryIds, selectedBannerPrice, noContentReason);
-        }
-    }
 }
 
