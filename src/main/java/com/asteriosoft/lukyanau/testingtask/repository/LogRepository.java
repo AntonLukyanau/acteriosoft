@@ -9,6 +9,9 @@ import java.util.List;
 
 public interface LogRepository extends JpaRepository<LogRecord, BigInteger> {
 
-    List<LogRecord> findByRequestIpAddressAndRequestTimeAfter(String ipAddress, LocalDateTime dateTime);
+    List<LogRecord> findByRequestIpAddressAndUserAgentAndRequestTimeAfter(
+            String ipAddress,
+            String userAgent,
+            LocalDateTime dateTime);
 
 }

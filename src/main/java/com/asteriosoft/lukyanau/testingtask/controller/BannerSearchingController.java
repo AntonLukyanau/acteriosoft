@@ -40,14 +40,14 @@ public class BannerSearchingController {
         String ipAddress = request.getRemoteAddr();
         String userAgent = request.getHeader("User-Agent");
 
-        LogRecord.LogRecordBuilder recordBuilder = LogRecord.builder();
-        recordBuilder.requestIpAddress(ipAddress)
+        LogRecord.LogRecordBuilder logBuilder = LogRecord.builder();
+        logBuilder.requestIpAddress(ipAddress)
                 .userAgent(userAgent)
                 .requestTime(LocalDateTime.now());
 
         List<Banner> banners = bannerSearcher.searchByCategoriesRequestParams(params);
-        Banner selectedBanner = bannerSelector.chooseBanner(banners, ipAddress);
-        saveLog(recordBuilder, banners, selectedBanner);
+        Banner selectedBanner = bannerSelector.chooseBanner(banners, ipAddress, userAgent);
+        saveLog(logBuilder, banners, selectedBanner);
         if (banners.isEmpty() || selectedBanner == null) {
             return ResponseEntity.noContent().build();
         }
@@ -55,32 +55,25 @@ public class BannerSearchingController {
         return ResponseEntity.ok(selectedBannerDTO);
     }
 
-    private void saveLog(LogRecord.LogRecordBuilder recordBuilder, List<Banner> banners, Banner selectedBanner) {
+    private void saveLog(LogRecord.LogRecordBuilder logBuilder, List<Banner> banners, Banner selectedBanner) {
         if (banners.isEmpty()) {
-            fillLogWithNoContentReason(recordBuilder, "Banner was not found in the database");
+            logBuilder.noContentReason("Banner was not found in the database");
         } else if (selectedBanner == null) {
-            fillLogWithNoContentReason(recordBuilder, "All matched banners had been showed");
+            logBuilder.noContentReason("All matched banners had been showed");
         } else {
-            recordBuilder.selectedBannerId(selectedBanner.getId())
-                    .selectedBannerCategoryIds(
-                            selectedBanner.getCategories().stream()
-                                    .map(Category::getId)
-                                    .map(Object::toString)
-                                    .collect(Collectors.joining(","))
-                    )
-                    .selectedBannerPrice(selectedBanner.getPrice())
-                    .noContentReason(null);
+            logBuilder.selectedBannerId(selectedBanner.getId())
+                    .selectedBannerCategoryIds(extractCategoryIds(selectedBanner))
+                    .selectedBannerPrice(selectedBanner.getPrice());
         }
-        LogRecord logRecord = recordBuilder.build();
+        LogRecord logRecord = logBuilder.build();
         logRepository.save(logRecord);
     }
 
-    private void fillLogWithNoContentReason(LogRecord.LogRecordBuilder recordBuilder, String reason) {
-        recordBuilder.selectedBannerId(null)
-                .selectedBannerCategoryIds(null)
-                .selectedBannerPrice(null)
-                .noContentReason(reason);
+    private String extractCategoryIds(Banner banner) {
+        return banner.getCategories().stream()
+                .map(Category::getId)
+                .map(Object::toString)
+                .collect(Collectors.joining(","));
     }
-
 
 }

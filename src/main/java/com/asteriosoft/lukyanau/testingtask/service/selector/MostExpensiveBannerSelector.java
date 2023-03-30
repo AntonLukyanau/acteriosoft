@@ -10,29 +10,31 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class RandomBannerSelector implements BannerSelector {
+public class MostExpensiveBannerSelector implements BannerSelector {
 
     private final BannerRepository bannerRepository;
     private final LogRepository logRepository;
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED, readOnly = true)
-    public Banner chooseBanner(List<Banner> banners, String ipAddress) {
-        List<Banner> previousBanners = loadBannersByIp(ipAddress);
+    public Banner chooseBanner(List<Banner> banners, String ipAddress, String userAgent) {
+        List<Banner> previousBanners = loadBannersByIp(ipAddress, userAgent);
         return banners.stream()
                 .filter(previousBanners::contains)
-                .findAny()
+                .max(Comparator.comparing(Banner::getPrice))
                 .orElse(null);
     }
 
-    private List<Banner> loadBannersByIp(String ipAddress) {
-        List<LogRecord> logs = logRepository.findByRequestIpAddressAndRequestTimeAfter(
+    private List<Banner> loadBannersByIp(String ipAddress, String userAgent) {
+        List<LogRecord> logs = logRepository.findByRequestIpAddressAndUserAgentAndRequestTimeAfter(
                 ipAddress,
+                userAgent,
                 LocalDate.now().atStartOfDay());
         List<Long> showedBannerIds = logs.stream()
                 .map(LogRecord::getSelectedBannerId)

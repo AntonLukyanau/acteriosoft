@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -24,11 +25,14 @@ import static org.mockito.Mockito.when;
 class RandomBannerSelectorTest {
 
     @InjectMocks
-    private RandomBannerSelector selector;
+    private MostExpensiveBannerSelector selector;
     @Mock
     private BannerRepository bannerRepository;
     @Mock
     private LogRepository logRepository;
+
+    private final String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+            "(KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36";
 
     @Test
     void when_chooseBannerWithNotEmptyBannerList_then_returnBanner() {
@@ -38,14 +42,14 @@ class RandomBannerSelectorTest {
                 .id(1L)
                 .name("name")
                 .body("body")
-                .price(100.0)
+                .price(BigDecimal.valueOf(100.0))
                 .deleted(false)
                 .categories(List.of(category))
                 .build();
         //when
-        when(logRepository.findByRequestIpAddressAndRequestTimeAfter(any(), any())).thenReturn(Collections.emptyList());
+        when(logRepository.findByRequestIpAddressAndUserAgentAndRequestTimeAfter(any(), any(), any())).thenReturn(Collections.emptyList());
         when(bannerRepository.findAllById(any())).thenReturn(Collections.singletonList(banner));
-        Banner selectedBanner = selector.chooseBanner(List.of(banner), "127.0.0.1");
+        Banner selectedBanner = selector.chooseBanner(List.of(banner), "127.0.0.1", userAgent);
         //then
         assertEquals(banner, selectedBanner);
     }
@@ -55,9 +59,10 @@ class RandomBannerSelectorTest {
         //given
         List<Banner> matchedBanners = Collections.emptyList();
         //when
-        when(logRepository.findByRequestIpAddressAndRequestTimeAfter(any(), any())).thenReturn(Collections.emptyList());
+        when(logRepository.findByRequestIpAddressAndUserAgentAndRequestTimeAfter(any(), any(), any()))
+                .thenReturn(Collections.emptyList());
         when(bannerRepository.findAllById(any())).thenReturn(Collections.emptyList());
-        Banner chooseBanner = selector.chooseBanner(matchedBanners, "127.0.0.1");
+        Banner chooseBanner = selector.chooseBanner(matchedBanners, "127.0.0.1", userAgent);
         //then
         assertNull(chooseBanner);
     }
@@ -70,7 +75,7 @@ class RandomBannerSelectorTest {
                 .id(1L)
                 .name("name")
                 .body("body")
-                .price(100.0)
+                .price(BigDecimal.valueOf(100.0))
                 .deleted(false)
                 .categories(List.of(category))
                 .build();
@@ -79,23 +84,54 @@ class RandomBannerSelectorTest {
                 .userAgent("agent")
                 .requestTime(LocalDateTime.now())
                 .selectedBannerCategoryIds(category.getId().toString())
-                .selectedBannerPrice(100.0)
+                .selectedBannerPrice(BigDecimal.valueOf(100.0))
                 .selectedBannerId(shownBanner.getId())
                 .build();
         Banner banner = Banner.builder()
                 .id(2L)
                 .name("name2")
                 .body("body2")
-                .price(200.0)
+                .price(BigDecimal.valueOf(200.0))
                 .deleted(false)
                 .categories(List.of(category))
                 .build();
         List<Banner> banners = List.of(shownBanner, banner);
         //when
-        when(logRepository.findByRequestIpAddressAndRequestTimeAfter(any(), any())).thenReturn(Collections.singletonList(log));
+        when(logRepository.findByRequestIpAddressAndUserAgentAndRequestTimeAfter(any(), any(), any()))
+                .thenReturn(Collections.singletonList(log));
         when(bannerRepository.findAllById(any())).thenReturn(Collections.singletonList(banner));
-        Banner choosenBanner = selector.chooseBanner(banners, "ip");
+        Banner choosenBanner = selector.chooseBanner(banners, "127.0.0.1", userAgent);
         //then
         assertEquals(banner, choosenBanner);
+    }
+
+    @Test
+    void when_chooseBannerWithTwoMatchedBanners_then_returnMostExpensiveBanner() {
+        //given
+        Category category = new Category(1L, "categoryName", "requestParamName");
+        Banner banner1 = Banner.builder()
+                .id(1L)
+                .name("name")
+                .body("body")
+                .price(BigDecimal.valueOf(100.0))
+                .deleted(false)
+                .categories(List.of(category))
+                .build();
+        Banner banner2 = Banner.builder()
+                .id(2L)
+                .name("name2")
+                .body("body2")
+                .price(BigDecimal.valueOf(200.0))
+                .deleted(false)
+                .categories(List.of(category))
+                .build();
+        List<Banner> banners = List.of(banner1, banner2);
+        //when
+        when(logRepository.findByRequestIpAddressAndUserAgentAndRequestTimeAfter(any(), any(), any()))
+                .thenReturn(Collections.emptyList());
+        when(bannerRepository.findAllById(any())).thenReturn(List.of(banner1, banner2));
+        Banner choosenBanner = selector.chooseBanner(banners, "127.0.0.1", userAgent);
+        //then
+        assertEquals(banner2, choosenBanner);
     }
 }

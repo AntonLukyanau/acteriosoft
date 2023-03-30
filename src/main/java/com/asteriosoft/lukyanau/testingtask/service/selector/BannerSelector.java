@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface BannerSelector {
 
-    Banner chooseBanner(List<Banner> banners, String ipAddress);
+    Banner chooseBanner(List<Banner> banners, String ipAddress, String userAgent);
 
 }
