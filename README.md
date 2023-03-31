@@ -61,3 +61,6 @@ Checklist for correct working the application:
     * delete:   DELETE http://localhost:8080/api/v1/banner/{id} , for example http://localhost:8080/api/v1/banner/1
 7. use this endpoint for searching banners GET http://localhost:8080/api/v1/search/banner/bid?...
    for example GET http://localhost:8080/api/v1/search/banner/bid?cat=IT&param=ooo&cat=mem
+8. user credentials which you can use for log in:
+    * username: user   password: password -  has no access to CRUD operations with Banner and Category entities
+    * username: admin   password: password - has full access
